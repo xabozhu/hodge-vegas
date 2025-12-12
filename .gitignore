@@ -1,0 +1,10 @@
+# Security: Never commit keys
+apikeys.key
+seckey.key
+.env
+
+# Python compilation
+__pycache__/
+*.pyc
+venv/
+.DS_Store
