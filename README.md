@@ -67,3 +67,102 @@ graph TD
     E -->|Edge < 3%| G[Maker Liquidity Provision];
     F --> H[Kalshi Exchange];
     G --> H;
+```
+
+---
+
+## 🚀 Installation & Usage Guide
+### 1. Environment Setup
+Ensure you have Python 3.9+ installed.
+
+```Bash
+# Clone the repository
+git clone [https://github.com/yourusername/hodge-vegas.git](https://github.com/yourusername/hodge-vegas.git)
+cd hodge-vegas
+
+# Install required dependencies
+pip install -r requirements.txt
+```
+
+### 2. Security & Credentials Configuration (Crucial)
+This engine requires API access to both The Odds API (for "Ground Truth" data) and Kalshi (for execution).
+
+#### Step A: Create the API Key File Create a file named apikeys.key in the root directory. This file is strictly for local use and is added to .gitignore to prevent leakage.
+
+Content of apikeys.key:
+
+```Ini, TOML
+
+ODDS_API_KEY="your_odds_api_key_here"
+KALSHI_KEY_ID="your_kalshi_key_id_here"
+```
+#### Step B: RSA Private Key Kalshi v2 API requires RSA-4096 signature authentication.
+
+Generate your RSA key pair via OpenSSL or Kalshi's dashboard.
+
+Save your Private Key as seckey.key in the root directory.
+
+🔒 Security Note: The .gitignore file is pre-configured to exclude *.key files. Never commit your private keys to GitHub.
+
+### 3. Execution Modes
+The engine supports two modes, controlled via src/main.py:
+
+🧪 Simulation Mode (DRY_RUN = True):
+
+Scans the market and calculates Fair Value.
+
+Logs "Simulated Orders" to the console without sending API requests.
+
+Recommended for backtesting and logic verification.
+
+💸 Live Trading Mode (DRY_RUN = False):
+
+Connects to the Kalshi Mainnet (api.kalshi.com).
+
+Executes real-money limit orders when ROI > Threshold.
+
+Requires a funded Kalshi account.
+
+### 4. Running the Engine
+To start the scanning loop:
+
+```Bash
+
+python src/main.py
+```
+
+Expected Console Output:
+
+```Plaintext
+
+🚀 STARTING HODGE-VEGAS ENGINE...
+📡 Fetching Vegas Consensus Data...
+📡 Scanning Kalshi Order Book...
+------------------------------------------------------------
+[OPPORTUNITY DETECTED]
+Event: NBA - Lakers vs Warriors
+Strategy: TAKER (Buy YES)
+Implied Probability (Vegas): 65.4%
+Market Price (Kalshi): 52.0¢
+Edge: +13.4%  |  ROI: 25.7%
+✅ EXECUTING: BUY 100x @ 52¢
+------------------------------------------------------------
+```
+
+## 📂 Project Structure
+```Plaintext
+
+Hodge-Vegas/
+├── src/
+│   ├── __init__.py          # Package initialization
+│   ├── main.py              # Entry point and orchestration logic
+│   └── math_engine.py       # Gaussian statistical modeling
+├── requirements.txt         # Dependencies (pandas, scipy, cryptography, etc.)
+├── .gitignore               # Security rules (excludes keys and venv)
+└── README.md                # Documentation
+```
+
+---
+
+## 📜 Disclaimer
+This software is for educational and research purposes. Quantitative trading involves significant financial risk. The author is not responsible for financial losses incurred by using this software.
