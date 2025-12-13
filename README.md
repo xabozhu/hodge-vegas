@@ -32,25 +32,26 @@ Hodge-Vegas acts as an **Oracle Bridge**:
 
 ## 🧮 Mathematical Framework
 
-The core innovation of this engine is the translation of **Point Spreads** into **Binary Fair Values**.
+This engine leverages two distinct mathematical models to identify pricing inefficiencies:
 
-Moneyline odds alone are insufficient as they only provide direction. **Point Spreads** provide the **Volatility ($\sigma$)** of the matchup, which is critical for accurate pricing.
-
-### 1. The Gaussian Assumption
-We model the score differential ($X$) between two teams as a Normal Distribution:
+### 1. The Gaussian Physics Model (Local Pricing)
+Used for single-game arbitrage. We model the score differential ($X$) as:
 $$X \sim \mathcal{N}(\mu, \sigma^2)$$
+Parameters ($\mu, \sigma$) are derived by back-solving the Z-scores from Vegas Moneyline and Spread data.
 
-### 2. Parameter Derivation
-The engine solves for $\mu$ and $\sigma$ using the following logic:
-* **Mean ($\mu$):** Derived from the absolute Point Spread ($S$).
-    $$\mu = |S|$$
-* **Volatility ($\sigma$):** Derived by back-solving the Z-score from the Moneyline Implied Probability ($P_{implied}$).
-    $$\sigma = \frac{S}{\Phi^{-1}(1 - P_{implied})}$$
-    *(Where $\Phi^{-1}$ is the quantile function of the standard normal distribution)*
+### 2. Discrete Hodge Decomposition (Global Consistency)
+Used to identify **Cyclic Arbitrage** and structural market inefficiencies.
 
-### 3. Fair Value Calculation
-The price of a Kalshi "Win" contract ($P_{binary}$) is the probability of the score differential being greater than zero (Survival Function):
-$$P_{binary} = 1 - \Phi\left(\frac{0 - \mu}{\sigma}\right)$$
+By representing the market as a graph where teams are nodes and spreads are edge flows ($Y_{ij}$), we apply **Discrete Hodge Theory** to decompose the observed betting flow:
+
+$$Y = Y_{gradient} + Y_{curl}$$
+
+* **$Y_{gradient}$ (Gradient Flow):** The "Global Potential" (True Strength). This represents the consistent ranking component $s$, such that $Y_{ij} \approx s_j - s_i$.
+* **$Y_{curl}$ (Curl Flow):** The "Cyclic Component" (Inconsistency).
+    $$\text{Curl} = Y - \text{grad}(s)$$
+
+**The Strategy:**
+When the **$L^2$-norm of the Curl component** ($||Y_{curl}||^2$) spikes, it indicates that the betting market contains internal contradictions (e.g., $A > B > C > A$). The engine flags these regimes as "High Volatility/High Opportunity" states, triggering more aggressive taker execution.
 
 ---
 

@@ -17,7 +17,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 # Import Math Engine
-from math_engine import GaussianPricingModel
+from math_engine import GaussianPricingModel, HodgeGraphModel # 新增导入
 
 # ==============================================================================
 # CONFIGURATION
@@ -145,6 +145,23 @@ def run_strategy():
 
     kalshi_markets = kalshi.fetch_markets()
     opportunities = []
+    # ... (fetch vegas_data logic) ...
+    
+    # --- NEW: HODGE DECOMPOSITION ANALYSIS ---
+    # Prepare data for graph
+    game_flows = []
+    for g in vegas_data:
+        # Extract home_team, away_team, and spread...
+        # This is pseudo-code, adjust to actual API structure
+        # game_flows.append({'home': 'LAL', 'away': 'GSW', 'spread': 5.5})
+        pass 
+    
+    if game_flows:
+        print("🌀 Running Discrete Hodge Decomposition...")
+        hodge_analysis = HodgeGraphModel.compute_market_inconsistency(game_flows)
+        print(f"   Market Curl Energy (Inefficiency): {hodge_analysis['total_curl_energy']:.2f}")
+        if hodge_analysis['total_curl_energy'] > 100:
+            print("   🚨 HIGH INEFFICIENCY DETECTED: Cyclic Arbitrage opportunity present!")
 
     # 3. Core Loop: Compare Physics Model vs Market Price
     for game in vegas_data:
